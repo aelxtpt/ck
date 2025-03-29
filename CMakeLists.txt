@@ -273,7 +273,6 @@ endforeach()
 file(GLOB SOURCES "${SRC_DIR}/src/*.c")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(${BUILD_DIR}/include)
 
 if(NOT DISABLE_SHARED)
     add_library(ck_shared SHARED ${SOURCES})
@@ -307,8 +306,8 @@ if(NOT BUILD_DIR STREQUAL SRC_DIR)
     file(MAKE_DIRECTORY ${BUILD_DIR}/regressions)
 endif()
 
-configure_file(${SRC_DIR}/include/ck_md.h.in ${BUILD_DIR}/include/ck_md.h @ONLY)
-configure_file(${SRC_DIR}/include/freebsd/ck_md.h.in ${BUILD_DIR}/include/freebsd/ck_md.h @ONLY)
+configure_file(${SRC_DIR}/include/ck_md.h.in ${SRC_DIR}/include/ck_md.h @ONLY)
+configure_file(${SRC_DIR}/include/freebsd/ck_md.h.in ${SRC_DIR}/include/freebsd/ck_md.h @ONLY)
 configure_file(${SRC_DIR}/build_flags/ck.build.in ${BUILD_DIR}/build/ck.build @ONLY)
 configure_file(${SRC_DIR}/build_flags/regressions.build.in ${BUILD_DIR}/build/regressions.build @ONLY)
 configure_file(${SRC_DIR}/build_flags/ck.pc.in ${BUILD_DIR}/build/ck.pc @ONLY)
