@@ -292,12 +292,22 @@ if(NOT DISABLE_SHARED)
     else()
         target_link_options(ck_shared PRIVATE -Wl,-soname,${LDNAME_MAJOR})
     endif()
+
+    target_include_directories(ck_shared PUBLIC
+        $<BUILD_INTERFACE:${SRC_DIR}/include>
+        $<INSTALL_INTERFACE:include/ck>
+    )
 endif()
 
 if(NOT DISABLE_STATIC)
     add_library(ck_static STATIC ${SOURCES})
     set_target_properties(ck_static PROPERTIES OUTPUT_NAME "ck")
     target_compile_options(ck_static PRIVATE ${CFLAGS} ${PTHREAD_CFLAGS})
+
+    target_include_directories(ck_static PUBLIC
+        $<BUILD_INTERFACE:${SRC_DIR}/include>
+        $<INSTALL_INTERFACE:include/ck>
+    )
 endif()
 
 # Geração de arquivos com configure_file
