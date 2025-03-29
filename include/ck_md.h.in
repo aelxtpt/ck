@@ -55,9 +55,9 @@
 #define @PPC32_LWSYNC_ENABLE@
 #endif /* @PPC32_LWSYNC_ENABLE@ */
 
-#ifndef @VMA_BITS@
-#define @VMA_BITS@ @VMA_BITS_VALUE@
-#endif /* @VMA_BITS@ */
+// #ifndef @VMA_BITS@
+// #define @VMA_BITS@ @VMA_BITS_VALUE@
+// #endif /* @VMA_BITS@ */
 
 #ifndef @MM@
 #define @MM@
