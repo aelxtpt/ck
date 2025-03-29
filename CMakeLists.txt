@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(ConcurrencyKit C)
 
-
-set(SRC_DIR "${CMAKE_SOURCE_DIR}")
+set(SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(BUILD_DIR "${CMAKE_BINARY_DIR}")
 set(VERSION "0.7.0")
 set(VERSION_MAJOR "0")
@@ -14,10 +13,8 @@ set(LDNAME "libck.so")
 set(LDNAME_VERSION "libck.so.${VERSION}")
 set(LDNAME_MAJOR "libck.so.${VERSION_MAJOR}")
 
-
 set(CFLAGS -Wall -Wextra)
 set(LDFLAGS)
-
 
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
     list(APPEND CFLAGS -m64 -D__x86_64__)
@@ -28,12 +25,10 @@ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "i[3-6]86")
 elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "arm")
     list(APPEND CFLAGS -D__arm__)
 else()
-    message(WARNING "Arquitetura não suportada: ${CMAKE_SYSTEM_PROCESSOR}")
+    message(WARNING "Arch not supported: ${CMAKE_SYSTEM_PROCESSOR}")
 endif()
 
-
 include_directories(${SRC_DIR}/include)
-
 
 set(SOURCES
     ${SRC_DIR}/src/ck_array.c
