@@ -339,7 +339,7 @@ ck_epoch_scan(struct ck_epoch *global,
 		cr = ck_epoch_record_container(cursor);
 
 		state = ck_pr_load_uint(&cr->state);
-		if (state & CK_EPOCH_STATE_FREE) {
+		if (state == CK_EPOCH_STATE_FREE) {
 			cursor = CK_STACK_NEXT(cursor);
 			continue;
 		}
@@ -347,6 +347,15 @@ ck_epoch_scan(struct ck_epoch *global,
 		active = ck_pr_load_uint(&cr->active);
 		*af |= active;
 
+		/*
+		 * We are able to get away without an additional load here given the
+		 * monotonic nature of epoch in this implementation. At most, we will yield
+		 * a false positive leading to additional delays.
+		 *
+		 * The epoch itself is monotonic, even if a re-ordering occurs, a newer
+		 * epoch will not invalidate safety and an older epoch only delays
+		 * reclamation.
+		 */
 		if (active != 0 && ck_pr_load_uint(&cr->epoch) != epoch)
 			return cr;
 
@@ -383,11 +392,11 @@ ck_epoch_dispatch(struct ck_epoch_record *record, unsigned int e, ck_stack_t *de
 
 	/* We don't require accuracy around peak calculation. */
 	if (n_pending > n_peak)
-		ck_pr_store_uint(&record->n_peak, n_peak);
+		ck_pr_store_uint(&record->n_peak, n_pending);
 
 	if (i > 0) {
-		ck_pr_add_uint(&record->n_dispatch, i);
-		ck_pr_sub_uint(&record->n_pending, i);
+		ck_pr_store_uint(&record->n_dispatch, record->n_dispatch + i);
+		ck_pr_store_uint(&record->n_pending, record->n_pending - i);
 	}
 
 	return i;
@@ -594,7 +603,8 @@ ck_epoch_poll_deferred(struct ck_epoch_record *record, ck_stack_t *deferred)
 
 	/* We are at a grace period if all threads are inactive. */
 	if (active == false) {
-		record->epoch = epoch;
+		ck_pr_store_uint(&record->epoch, epoch);
+
 		for (epoch = 0; epoch < CK_EPOCH_LENGTH; epoch++)
 			ck_epoch_dispatch(record, epoch, deferred);
 
